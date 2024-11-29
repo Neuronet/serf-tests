@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: serf-seed-deployment
+  labels:
+    app: serf-seed
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: serf-seed-app
+  template:
+    metadata:
+      labels:
+        app: serf-seed-app
+    spec:
+      containers:
+        - name: serf
+          image: neuronet3000/serf-sidecar:0.1.0
+          command: ["sh", "/serf-start.sh"]
+          ports:
+            - containerPort: 7373
+              name: rpc-port
+            - containerPort: 7946
+              name: ghossip-port
+          volumeMounts:
+            - name: serf-seed-config-map
+              mountPath: /config
+              readOnly: true
+#            - name: minimounted
+#              mountPath: /minimounted
+      volumes:
+        - name: serf-seed-config-map
+          configMap:
+            name: serf-seed-config-map
+#        - name: minimounted
+#          hostPath:
+#            path: /host

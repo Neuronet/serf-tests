@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-app
+  labels:
+    app: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: app
+          image: neuronet3000/serf-user-app:0.1.0
+          volumeMounts:
+              - name: app-config-map
+                mountPath: /config
+                readOnly: true
+#              - name: minimounted
+#                mountPath: /minimounted
+        - name: serf
+          image: neuronet3000/serf-sidecar:0.1.0
+          command: ["sh", "/serf-start.sh"]
+          ports:
+            - containerPort: 7373
+              name: rpc-port
+            - containerPort: 7946
+              name: ghossip-port
+          volumeMounts:
+              - name: serf-config-map
+                mountPath: /config
+                readOnly: true
+      volumes:
+        - name: app-config-map
+          configMap:
+            name: user-app-config
+        - name: serf-config-map
+          configMap:
+            name: serf-config-map
+#        - name: minimounted
+#          hostPath:
+#            path: /host

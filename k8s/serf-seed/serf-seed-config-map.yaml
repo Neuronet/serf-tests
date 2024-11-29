@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: serf-seed-config-map
+data:
+  serf-config.json: '
+  {
+    "tags": {
+        "role": "seed"
+    },
+    "profile": "wan",
+    "rpc_addr": "0.0.0.0:7373",
+    "rejoin_after_leave": false,
+    "leave_on_terminate": true,
+    "reconnect_timeout": "2m",
+    "tombstone_timeout": "2m",
+    "event_handlers": [
+      "query:uptime=uptime"
+    ]
+}
+  '
